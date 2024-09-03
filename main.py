@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
-from urlShortener.model.urls import Url
+from model.urls import Url
 import requests
 from uuid import uuid4
 from requests.exceptions import RequestException
+import uvicorn
 
 app = FastAPI()
 
@@ -17,7 +18,6 @@ async def short(url: Url, short_url: str | None = None):
         validated_url.raise_for_status()
     except RequestException:
         raise HTTPException(status_code=400, detail="Invalid URL")
-
 
     if not validated_url.status_code in range(200, 400):
         raise HTTPException(status_code=404, detail="Invalid URL")
@@ -47,5 +47,8 @@ async def redirect(short_url: str):
     if short_url in url_library:
         redirect_link = str(url_library[short_url]["original_url"])
         print(redirect_link)
-        return RedirectResponse(redirect_link, status_code=302)
+        return RedirectResponse(redirect_link, status_code=307)
     raise HTTPException(status_code=404, detail=f"No URL found for '{short_url}' short url provided.")
+
+if __name__ == '__main__':
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

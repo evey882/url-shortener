@@ -1,6 +1,6 @@
 import unittest
 from fastapi.testclient import TestClient
-from urlShortener.main import app, url_library
+from urlshortener.main import app, url_library
 
 
 class TestUrl(unittest.TestCase):
